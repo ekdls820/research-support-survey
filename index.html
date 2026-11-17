@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>도서관 연구지원 서비스 설문</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1d2330; --muted: #5d6677;
+    --line: #dde1e8; --accent: #2f5bd3; --accent-soft: #e8eefc; --err: #c4352b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #14171d; --card: #1d212a; --text: #e6e9ef; --muted: #9aa3b2;
+      --line: #2e3440; --accent: #7c9cf5; --accent-soft: #232c45; --err: #f07167; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Pretendard", "Malgun Gothic", system-ui, sans-serif; line-height: 1.6; }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+  header h1 { margin: 0 0 8px; font-size: 1.6rem; }
+  header p { margin: 0; color: var(--muted); }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 20px; margin-top: 20px; }
+  section h2 { margin: 0 0 4px; font-size: 1.1rem; }
+  .hint { margin: 0 0 12px; color: var(--muted); font-size: .9rem; font-weight: 400; }
+  .q { padding: 14px 0; border-top: 1px solid var(--line); }
+  .q:first-of-type { border-top: 0; }
+  .q > label, .q > .label { display: block; font-weight: 600; margin-bottom: 8px; }
+  .req::after { content: " *"; color: var(--err); }
+  select, textarea, input[type=text] { width: 100%; padding: 10px; border: 1px solid var(--line);
+    border-radius: 8px; background: var(--bg); color: var(--text); font: inherit; }
+  textarea { min-height: 96px; resize: vertical; }
+  .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .opts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .opts.col { flex-direction: column; }
+  .scale label, .opts label { display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer;
+    font-size: .9rem; text-align: center; }
+  .opts.col label { justify-content: flex-start; text-align: left; }
+  .scale label { padding: 8px 4px; font-size: .85rem; }
+  .scale input, .opts input { position: absolute; opacity: 0; pointer-events: none; }
+  .scale label:has(input:checked), .opts label:has(input:checked) {
+    background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .scale label:has(input:focus-visible), .opts label:has(input:focus-visible) { outline: 2px solid var(--accent); }
+  .opts label small { color: var(--muted); font-weight: 400; }
+  .missing { box-shadow: inset 3px 0 0 var(--err); padding-left: 10px; }
+  [hidden] { display: none !important; }
+  button { margin-top: 24px; width: 100%; padding: 14px; border: 0; border-radius: 10px;
+    background: var(--accent); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  button:disabled { opacity: .6; cursor: wait; }
+  #msg { margin-top: 12px; text-align: center; color: var(--err); }
+  .done { text-align: center; padding: 48px 20px; }
+  @media (max-width: 480px) { .scale label { font-size: .75rem; padding: 8px 2px; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>도서관 연구지원 서비스 설문</h1>
+    <p>도서관 연구지원 서비스의 이용 경험과 앞으로 필요한 서비스를 알아보기 위한 익명 설문입니다. 약 3~5분 소요됩니다.</p>
+  </header>
+
+  <form id="survey" novalidate>
+    <section>
+      <h2>1. 응답자 정보</h2>
+      <div class="q">
+        <label class="req" for="dept">소속</label>
+        <select id="dept" name="소속" required>
+          <option value="">선택하세요</option>
+          <option>연구부서</option><option>사업·정책부서</option><option>경영·행정지원부서</option><option>기타</option>
+        </select>
+      </div>
+      <div class="q">
+        <span class="label req">직무</span>
+        <div class="opts" data-required>
+          <label><input type="radio" name="직무" value="연구직">연구직</label>
+          <label><input type="radio" name="직무" value="행정직">행정직</label>
+          <label><input type="radio" name="직무" value="기술직">기술직</label>
+          <label><input type="radio" name="직무" value="기타">기타</label>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>2. 연구지원 서비스 이용 경험</h2>
+      <div class="q">
+        <span class="label req">최근 1년간 도서관 연구지원 서비스를 이용해 본 적이 있습니까?</span>
+        <div class="opts" data-required>
+          <label><input type="radio" name="이용경험" value="있음">있다</label>
+          <label><input type="radio" name="이용경험" value="없음">없다</label>
+        </div>
+      </div>
+
+      <div id="usedBlock" hidden>
+        <div class="q">
+          <span class="label req">이용한 서비스를 모두 골라 주세요.</span>
+          <div class="opts col" data-required>
+            <label><input type="checkbox" name="이용서비스" value="문헌·자료 검색 지원">문헌·자료 검색 지원 <small>(레퍼런스 질의응답)</small></label>
+            <label><input type="checkbox" name="이용서비스" value="원문복사·상호대차">원문복사·상호대차</label>
+            <label><input type="checkbox" name="이용서비스" value="연구동향분석(RTA)">연구동향분석(RTA) 문헌 검색</label>
+            <label><input type="checkbox" name="이용서비스" value="신착·주제별 정보 알림">신착·주제별 정보 알림 서비스</label>
+            <label><input type="checkbox" name="이용서비스" value="DB·도구 이용 교육">데이터베이스·참고문헌 관리도구 교육</label>
+            <label><input type="checkbox" name="이용서비스" value="자료 구입 신청">연구용 자료 구입 신청</label>
+            <label><input type="checkbox" name="이용서비스" value="기타">기타</label>
+          </div>
+        </div>
+        <div class="q">
+          <span class="label req">이용한 서비스에 전반적으로 만족하십니까?</span>
+          <div class="scale" data-scale="만족도" data-required></div>
+        </div>
+        <div class="q">
+          <span class="label req">이용한 서비스가 실제 연구·업무에 도움이 되었습니까?</span>
+          <div class="scale" data-scale="도움정도" data-required></div>
+        </div>
+        <div class="q">
+          <label for="usedNote">이용하면서 좋았던 점이나 불편했던 점</label>
+          <textarea id="usedNote" name="이용의견" maxlength="1000"></textarea>
+        </div>
+      </div>
+
+      <div id="notUsedBlock" hidden>
+        <div class="q">
+          <span class="label req">이용하지 않은 이유는 무엇입니까? (복수 선택)</span>
+          <div class="opts col" data-required>
+            <label><input type="checkbox" name="미이용사유" value="서비스가 있는지 몰라서">서비스가 있는지 몰라서</label>
+            <label><input type="checkbox" name="미이용사유" value="필요한 서비스가 없어서">필요한 서비스가 없어서</label>
+            <label><input type="checkbox" name="미이용사유" value="신청 방법을 몰라서·번거로워서">신청 방법을 모르거나 번거로워서</label>
+            <label><input type="checkbox" name="미이용사유" value="결과를 받기까지 오래 걸려서">결과를 받기까지 오래 걸릴 것 같아서</label>
+            <label><input type="checkbox" name="미이용사유" value="스스로 해결 가능해서">스스로 해결할 수 있어서</label>
+            <label><input type="checkbox" name="미이용사유" value="기타">기타</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>3. 앞으로 원하는 연구지원 서비스</h2>
+      <div class="q">
+        <span class="label req">앞으로 도서관에서 제공했으면 하는 서비스를 골라 주세요. (최대 3개)</span>
+        <div class="opts col" id="wish" data-required>
+          <label><input type="checkbox" name="희망서비스" value="연구동향 분석 정기 제공">연구 주제별 동향 분석 정기 제공</label>
+          <label><input type="checkbox" name="희망서비스" value="체계적 문헌고찰 검색 지원">체계적 문헌고찰(SR) 검색 전략 지원</label>
+          <label><input type="checkbox" name="희망서비스" value="AI 활용 문헌조사 지원·교육">AI 도구를 활용한 문헌조사 지원·교육</label>
+          <label><input type="checkbox" name="희망서비스" value="학술지 투고처 추천">학술지 투고처 추천·부실학술지 확인</label>
+          <label><input type="checkbox" name="희망서비스" value="연구성과·인용 분석">연구성과·인용 지표 분석</label>
+          <label><input type="checkbox" name="희망서비스" value="연구데이터 관리 지원">연구데이터 검색·관리 지원</label>
+          <label><input type="checkbox" name="희망서비스" value="저작권·오픈액세스 상담">저작권·오픈액세스 상담</label>
+          <label><input type="checkbox" name="희망서비스" value="참고문헌 관리도구 교육">참고문헌 관리도구(EndNote, Zotero 등) 교육</label>
+          <label><input type="checkbox" name="희망서비스" value="기타">기타</label>
+        </div>
+      </div>
+      <div class="q">
+        <span class="label">선호하는 신청·이용 방식 (복수 선택)</span>
+        <div class="opts">
+          <label><input type="checkbox" name="선호방식" value="온라인 신청">온라인 신청</label>
+          <label><input type="checkbox" name="선호방식" value="이메일">이메일</label>
+          <label><input type="checkbox" name="선호방식" value="메신저·전화">메신저·전화</label>
+          <label><input type="checkbox" name="선호방식" value="도서관 방문">도서관 방문</label>
+        </div>
+      </div>
+      <div class="q">
+        <label for="wishNote">원하는 서비스를 구체적으로 적어 주세요.</label>
+        <p class="hint">예: 어떤 주제의 자료를, 어떤 형태로, 얼마나 자주 받고 싶은지</p>
+        <textarea id="wishNote" name="희망의견" maxlength="1000"></textarea>
+      </div>
+    </section>
+
+    <button type="submit" id="submit">제출하기</button>
+    <p id="msg" role="alert"></p>
+  </form>
+</main>
+
+<script>
+  // ▼ Google Apps Script 웹 앱 배포 후 받은 URL을 여기에 붙여 넣으세요 (README 참고)
+  const SCRIPT_URL = "";
+
+  const labels = ["전혀 아니다", "아니다", "보통", "그렇다", "매우 그렇다"];
+  document.querySelectorAll("[data-scale]").forEach(el => {
+    const name = el.dataset.scale;
+    el.innerHTML = labels.map((l, i) =>
+      `<label><input type="radio" name="${name}" value="${i + 1}">${i + 1}<br>${l}</label>`).join("");
+  });
+
+  // 이용 경험에 따라 문항 전환
+  const usedBlock = document.getElementById("usedBlock");
+  const notUsedBlock = document.getElementById("notUsedBlock");
+  document.querySelectorAll('input[name="이용경험"]').forEach(r => r.addEventListener("change", () => {
+    const used = r.value === "있음";
+    usedBlock.hidden = !used;
+    notUsedBlock.hidden = used;
+    const off = used ? notUsedBlock : usedBlock;
+    off.querySelectorAll("input").forEach(i => i.checked = false);
+    off.querySelectorAll("textarea").forEach(t => t.value = "");
+  }));
+
+  // 희망 서비스 최대 3개
+  const wish = document.querySelectorAll("#wish input");
+  wish.forEach(cb => cb.addEventListener("change", () => {
+    const n = [...wish].filter(c => c.checked).length;
+    wish.forEach(c => { if (!c.checked) c.disabled = n >= 3; });
+  }));
+
+  const form = document.getElementById("survey");
+  const msg = document.getElementById("msg");
+  const btn = document.getElementById("submit");
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    msg.textContent = "";
+    document.querySelectorAll(".missing").forEach(x => x.classList.remove("missing"));
+
+    const missing = [];
+    const dept = document.getElementById("dept");
+    if (!dept.value) missing.push(dept.closest(".q"));
+    document.querySelectorAll("[data-required]").forEach(g => {
+      if (g.closest("[hidden]")) return;
+      if (!g.querySelector("input:checked")) missing.push(g.closest(".q"));
+    });
+    if (missing.length) {
+      missing.forEach(q => q.classList.add("missing"));
+      missing[0].scrollIntoView({ behavior: "smooth", block: "center" });
+      msg.textContent = `필수 문항 ${missing.length}개에 응답해 주세요.`;
+      return;
+    }
+
+    if (!SCRIPT_URL) {
+      msg.textContent = "응답 저장 주소(SCRIPT_URL)가 아직 설정되지 않았습니다. 담당자에게 문의하세요.";
+      return;
+    }
+
+    const data = new URLSearchParams();
+    const fd = new FormData(form);
+    for (const key of new Set(fd.keys())) data.append(key, fd.getAll(key).join(", "));
+
+    btn.disabled = true; btn.textContent = "제출 중…";
+    try {
+      await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", body: data });
+      form.outerHTML = `<section class="done"><h2>응답해 주셔서 감사합니다.</h2>
+        <p class="hint">보내 주신 의견은 연구지원 서비스 개선에 반영하겠습니다.</p></section>`;
+    } catch (err) {
+      btn.disabled = false; btn.textContent = "제출하기";
+      msg.textContent = "제출 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.";
+    }
+  });
+</script>
+</body>
+</html>
